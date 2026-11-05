@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:21.0.10
+ARG BUILD_FROM=ghcr.io/home-assistant/armv7-base:3.21
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -14,83 +14,87 @@ ENV \
 COPY requirements.txt /tmp/
 
 # Setup base
-ARG BUILD_ARCH=amd64
+ARG BUILD_ARCH=armv7
 ARG HA_CLI_VERSION="5.6.0"
 
 # hadolint ignore=DL3003,DL3042
 RUN \
     apk add --no-cache --virtual .build-dependencies \
-        bsd-compat-headers=0.7.2-r6 \
-        build-base=0.5-r4 \
-        cmake=4.2.3-r0 \
-        docker=29.9.2-r0 \
-        json-c-dev=0.18-r1 \
-        libffi-dev=3.5.2-r1 \
-        libuv-dev=1.52.1-r0 \
-        openssl-dev=3.5.9-r0 \
-        python3-dev=3.14.10-r1 \
-        zlib-dev=1.3.2-r1 \
+        bsd-compat-headers \
+        build-base \
+        cmake \
+        docker \
+        json-c-dev \
+        libffi-dev \
+        libuv-dev \
+        openssl-dev \
+        python3-dev \
+        zlib-dev \
     \
     && apk add --no-cache \
-        ack=3.10.0-r0 \
-        alsa-plugins-pulse=1.2.12-r2 \
-        alsa-utils=1.2.15.2-r1 \
-        awake=1.0-r13 \
-        bash-completion=2.17.0-r1 \
-        bind-tools=9.20.30-r0 \
-        bluez=5.86-r2 \
-        colordiff=1.0.22-r0 \
-        docker-bash-completion=29.9.2-r0 \
-        docker-zsh-completion=29.9.2-r0 \
-        gcompat=1.1.0-r4 \
-        git=2.54.0-r0 \
-        htop=3.5.3-r0 \
-        iproute2=7.0.0-r0 \
-        json-c=0.18-r1 \
-        libltdl=2.6.0-r1 \
-        libstdc++=15.2.0-r5 \
-        libuv=1.52.1-r0 \
-        libxml2-utils=2.13.9-r2 \
-        lsblk=2.42.3-r1 \
-        mariadb-client=11.8.9-r0 \
-        mc=4.8.33-r3 \
-        mosh=1.4.0-r18 \
-        mosquitto-clients=2.1.2-r1 \
-        mtr=0.96-r2 \
-        nano-syntax=9.3-r0 \
-        nano=9.3-r0 \
-        ncdu=1.22-r2 \
-        ncurses=6.6_p20260516-r0 \
-        neovim=0.12.2-r0 \
-        nmap=7.99-r0 \
-        nmap-ncat=7.99-r0 \
-        openssh=10.3_p1-r1 \
-        openssl=3.5.9-r0 \
-        procps-ng=4.0.6-r0 \
-        pwgen=2.08-r3 \
-        pulseaudio-utils=17.0-r7 \
-        py3-pip=26.1.2-r0 \
-        python3=3.14.10-r1 \
-        rsync=3.5.0-r0 \
-        screen=5.0.2-r0 \
-        smartmontools=7.5-r0 \
-        sqlite=3.53.4-r0 \
-        sudo=1.9.17_p2-r2 \
-        tcpdump=4.99.6-r1 \
-        tmux=3.7c-r0 \
-        ttyd=1.7.7-r0 \
-        wget=1.25.0-r3 \
-        zip=3.0-r13 \
-        zsh-autosuggestions=0.7.1-r0 \
-        zsh-syntax-highlighting=0.8.0-r1 \
-        zsh=5.9-r7 \
+        ack \
+        alsa-plugins-pulse \
+        alsa-utils \
+        awake \
+        bash-completion \
+        bind-tools \
+        bluez \
+        colordiff \
+        docker-bash-completion \
+        docker-zsh-completion \
+        gcompat \
+        git \
+        htop \
+        iproute2 \
+        json-c \
+        libltdl \
+        libstdc++ \
+        libuv \
+        libxml2-utils \
+        lsblk \
+        mariadb-client \
+        mc \
+        mosh \
+        mosquitto-clients \
+        mtr \
+        nano-syntax \
+        nano \
+        ncdu \
+        ncurses \
+        neovim \
+        nmap \
+        nmap-ncat \
+        openssh \
+        openssl \
+        procps-ng \
+        pwgen \
+        pulseaudio-utils \
+        py3-pip \
+        python3 \
+        rsync \
+        screen \
+        smartmontools \
+        sqlite \
+        sudo \
+        tcpdump \
+        tmux \
+        ttyd \
+        wget \
+        zip \
+        zsh-autosuggestions \
+        zsh-syntax-highlighting \
+        zsh \
+        curl \
     \
     && git clone --depth 1 \
         https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh \
     \
-    && curl -L -s -o /usr/bin/ha \
-        "https://github.com/home-assistant/cli/releases/download/${HA_CLI_VERSION}/ha_${BUILD_ARCH}" \
-    \
+    && if [ "${BUILD_ARCH}" = "armv7" ]; then \
+        HA_CLI_URL="https://github.com/home-assistant/cli/releases/download/4.46.0/ha_armv7"; \
+       else \
+        HA_CLI_URL="https://github.com/home-assistant/cli/releases/download/${HA_CLI_VERSION}/ha_${BUILD_ARCH}"; \
+       fi \
+    && curl -L -s -o /usr/bin/ha "${HA_CLI_URL}" \
     && chmod a+x /usr/bin/ha \
     && ha completion bash > /usr/share/bash-completion/completions/ha \
     \
@@ -102,7 +106,7 @@ RUN \
     && ln -s -f /usr/bin/nvim /usr/bin/vi \
     && ln -s -f /usr/bin/nvim /usr/bin/neovim \
     \
-    && pip3 install -r /tmp/requirements.txt \
+    && pip3 install --break-system-packages -r /tmp/requirements.txt \
     \
     && apk del --no-cache --purge .build-dependencies \
     \
@@ -115,7 +119,7 @@ RUN \
         /root/.cache \
         /root/.cmake \
         /tmp/*
-
+        
 # Copy root filesystem
 COPY rootfs /
 
