@@ -1,9 +1,10 @@
 ---
-name: Advanced SSH & Web Terminal
-version: dev
+name: Advanced SSH & Web Terminal (armv7)
+version: "18.2.0"
 slug: ssh
-description: A supercharged SSH & Web Terminal access to your Home Assistant instance
-url: https://github.com/hassio-addons/app-ssh
+description: A supercharged SSH & Web Terminal access for armv7
+url: https://github.com/Mimoz1/app-ssh-armv7
+image: "ghcr.io/mimoz1/app-ssh-armv7"
 startup: services
 ingress: true
 ingress_port: 0
@@ -13,6 +14,7 @@ panel_icon: mdi:console
 panel_title: Terminal
 homeassistant: 0.92.0b2
 arch:
+  - armv7
   - aarch64
   - amd64
 ports:
